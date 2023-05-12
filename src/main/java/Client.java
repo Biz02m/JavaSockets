@@ -32,9 +32,11 @@ public class Client implements Runnable{
             System.out.println(msg);
 
             Integer n = sc.nextInt();
+            sc.nextLine();
             out.writeObject(n);
             msg = (String) in.readObject();
             System.out.println(msg);
+            out.flush();
 
             for (int i = 0; i < n; i++) {
                 msg = sc.nextLine();
