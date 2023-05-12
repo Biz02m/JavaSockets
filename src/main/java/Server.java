@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -22,18 +23,23 @@ public class Server implements Runnable{
     //main server logic
     @Override
     public void run() {
-        try (ServerSocket tmp = new ServerSocket(9999)){
+        try {
+            this.serverSock = new ServerSocket(9999);
             System.out.println("Server started");
-            this.serverSock = tmp;
             threadPool = Executors.newCachedThreadPool();
+            System.out.println("Awaiting Connections...");
             while(!done) {
-                try (Socket client = serverSock.accept()) {
+                try {
+                    Socket client = serverSock.accept();
                     connectionHandler conhand = new connectionHandler(client);
                     connections.add(conhand);
                     threadPool.execute(conhand);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
             shutDown();
         }
     }
@@ -66,10 +72,9 @@ public class Server implements Runnable{
         //single connection handler logic
         @Override
         public void run() {
-            try ( ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-                  ObjectInputStream ois = new ObjectInputStream(client.getInputStream())
-                    ){
-                System.out.println("Awaiting Connections...");
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(this.client.getOutputStream());
+                ObjectInputStream ois = new ObjectInputStream(this.client.getInputStream());
                 this.out = oos;
                 this.in = ois;
                 sendMessage("Put in nickname: ");
@@ -88,10 +93,7 @@ public class Server implements Runnable{
                 System.out.println("Processed " + nick +"`s request. closing connection");
                 shutDown();
 
-            }catch (IOException e){
-                e.printStackTrace();
-                shutDown();
-            } catch (ClassNotFoundException e) {
+            }catch (IOException | ClassNotFoundException e){
                 e.printStackTrace();
                 shutDown();
             }

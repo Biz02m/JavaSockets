@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -18,37 +19,36 @@ public class Client implements Runnable{
 
     @Override
     public void run() {
-        try (Socket client = new Socket("127.0.0.1",9999)){
-            try(ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-                ObjectInputStream ois = new ObjectInputStream(client.getInputStream())) {
-                this.clientSock = client;
-                this.in = ois;
-                this.out = oos;
-                String msg = (String) in.readObject();
-                System.out.println(msg);
-                Integer n = sc.nextInt();
-                out.writeObject(sc);
-                msg = (String) in.readObject();
-                System.out.println(msg);
+        try{
+            Socket socket = new Socket(InetAddress.getLocalHost(), 9999);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            this.clientSock = socket;
+            String msg = (String) in.readObject();
+            System.out.println(msg);
+            String nickname = sc.nextLine();
+            out.writeObject(nickname);
+            msg = (String) in.readObject();
+            System.out.println(msg);
 
-                for (int i = 0; i < n; i++) {
-                    msg = sc.nextLine();
-                    Message message = new Message(i, msg);
-                    out.writeObject(message);
-                }
+            Integer n = sc.nextInt();
+            out.writeObject(n);
+            msg = (String) in.readObject();
+            System.out.println(msg);
 
-                msg = (String) in.readObject();
-                System.out.println(msg);
-                System.out.println("finished sending contents to server, closing connection");
-                shutDown();
+            for (int i = 0; i < n; i++) {
+                msg = sc.nextLine();
+                Message message = new Message(i, msg);
+                out.writeObject(message);
             }
 
-        } catch (IOException e){
+            msg = (String) in.readObject();
+            System.out.println(msg);
+            System.out.println("finished sending contents to server, closing connection");
             shutDown();
+        } catch (IOException | ClassNotFoundException e){
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             shutDown();
-            e.printStackTrace();
         }
     }
 
