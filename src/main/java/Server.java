@@ -81,8 +81,7 @@ public class Server implements Runnable{
 
                 for(int i = 0; i < n; i++){
                     Message message = (Message) in.readObject();
-                    //TODO: print received Messages?
-                    // Do something with the messages
+                    System.out.println(nick + " -> " + message.getNumber() + ": " + message.getContent());
                 }
 
                 sendMessage("finished");
