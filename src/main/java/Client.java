@@ -30,7 +30,12 @@ public class Client implements Runnable{
             out.writeObject(sc);
             msg = (String) in.readObject();
             System.out.println(msg);
-            //TODO: send n messages in message class type
+
+            for(int i = 0; i < n; i++){
+                msg = sc.nextLine();
+                Message message = new Message(i, msg);
+                out.writeObject(message);
+            }
 
             msg = (String) in.readObject();
             System.out.println(msg);
@@ -38,10 +43,10 @@ public class Client implements Runnable{
             shutDown();
 
         } catch (IOException e){
-            //TODO: handle exception
+            shutDown();
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            //TODO: handle exception
+            shutDown();
             e.printStackTrace();
         }
     }
