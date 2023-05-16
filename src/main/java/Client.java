@@ -24,26 +24,36 @@ public class Client implements Runnable{
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
             this.clientSock = socket;
+            //receive put in nickname
             String msg = (String) in.readObject();
             System.out.println(msg);
+
+            //send nickname
             String nickname = sc.nextLine();
             out.writeObject(nickname);
+
+            //receive ready msg
             msg = (String) in.readObject();
             System.out.println(msg);
 
+            //send the integer value
             Integer n = sc.nextInt();
             sc.nextLine();
             out.writeObject(n);
+
+            //receive ready for n msg
             msg = (String) in.readObject();
             System.out.println(msg);
             out.flush();
 
+            //send n msg
             for (int i = 0; i < n; i++) {
                 msg = sc.nextLine();
                 Message message = new Message(i, msg);
                 out.writeObject(message);
             }
 
+            //receive finished
             msg = (String) in.readObject();
             System.out.println(msg);
             System.out.println("finished sending contents to server, closing connection");
