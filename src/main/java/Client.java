@@ -59,7 +59,8 @@ public class Client implements Runnable{
             System.out.println("finished sending contents to server, closing connection");
             shutDown();
         } catch (IOException | ClassNotFoundException e){
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Connection was closed");
             shutDown();
         }
     }

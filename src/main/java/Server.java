@@ -114,7 +114,7 @@ public class Server implements Runnable{
                 shutDown();
 
             }catch (IOException | ClassNotFoundException e){
-                e.printStackTrace();
+                //e.printStackTrace();
                 shutDown();
             }
         }
