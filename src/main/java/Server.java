@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class Server implements Runnable{
     private List<connectionHandler> connections;
-    private ExecutorService threadPool; //don't know what thread-pooling is,  I have no time to research
+    private ExecutorService threadPool;
     private ServerSocket serverSock;
     private boolean done;
 
