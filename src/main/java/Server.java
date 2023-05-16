@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,6 +29,8 @@ public class Server implements Runnable{
             System.out.println("Server started");
             threadPool = Executors.newCachedThreadPool();
             System.out.println("Awaiting Connections...");
+            Thread handler = new Thread(new serverHandler());
+            handler.start();
             while(!done) {
                 try {
                     Socket client = serverSock.accept();
@@ -35,7 +38,7 @@ public class Server implements Runnable{
                     connections.add(conhand);
                     threadPool.execute(conhand);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         } catch (IOException e) {
@@ -56,6 +59,23 @@ public class Server implements Runnable{
 
         for (connectionHandler con: this.connections) {
             con.shutDown();
+        }
+    }
+
+    class serverHandler implements Runnable{
+        private Scanner sc;
+
+        @Override
+        public void run() {
+            System.out.println("Server ready to be closed.");
+            this.sc = new Scanner(System.in);
+            String input;
+            while(!done){
+                input = sc.nextLine();
+                if(input.equals("quit")){
+                    shutDown();
+                }
+            }
         }
     }
 
